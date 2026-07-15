@@ -426,7 +426,10 @@ em{font-style:italic;font-weight:400}
   </a>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+emailjs.init({ publicKey: 'c0AjUMJl8c6-XMvzE' });
+
 const nav = document.getElementById('nav');
 let lastScroll = 0;
 window.addEventListener('scroll', () => {
@@ -438,17 +441,22 @@ window.addEventListener('scroll', () => {
 
 document.getElementById('signup-form').addEventListener('submit', (e) => {
   e.preventDefault();
-  const data = new FormData(e.target);
-  const nome = encodeURIComponent(data.get('nome'));
-  const email = encodeURIComponent(data.get('email'));
-  const tel = encodeURIComponent(data.get('telefone'));
-  const area = encodeURIComponent(data.get('area'));
-  const cidade = encodeURIComponent(data.get('cidade'));
-  const msg = `Ol%C3%A1!%20Quero%20receber%20informa%C3%A7%C3%B5es%20sobre%20a%20Forma%C3%A7%C3%A3o%20PCM%20P2.%0A%0ANome%3A%20${nome}%0AE-mail%3A%20${email}%0AWhatsApp%3A%20${tel}%0A%C3%81rea%20de%20atua%C3%A7%C3%A3o%3A%20${area}%0ACidade%3A%20${cidade}`;
-  document.getElementById('form-success').classList.add('active');
-  setTimeout(() => {
-    window.open(`https://wa.me/5571999778822?text=${msg}`, '_blank');
-  }, 600);
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const btnHTML = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Enviando...'; }
+  emailjs.sendForm('service_zhnbpif', 'template_welp72q', form)
+    .then(() => {
+      document.getElementById('form-success').classList.add('active');
+      form.reset();
+    })
+    .catch((err) => {
+      console.error('EmailJS error', err);
+      alert('Não foi possível enviar agora. Tente de novo em instantes ou fale pelo WhatsApp.');
+    })
+    .finally(() => {
+      if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.innerHTML = btnHTML; }
+    });
 });
 </script>
 
