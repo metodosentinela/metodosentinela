@@ -426,10 +426,7 @@ em{font-style:italic;font-weight:400}
   </a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-emailjs.init({ publicKey: 'c0AjUMJl8c6-XMvzE' });
-
 const nav = document.getElementById('nav');
 let lastScroll = 0;
 window.addEventListener('scroll', () => {
@@ -445,13 +442,25 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
   const btn = form.querySelector('button[type="submit"]');
   const btnHTML = btn ? btn.innerHTML : '';
   if (btn) { btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Enviando...'; }
-  emailjs.sendForm('service_zhnbpif', 'template_welp72q', form)
+  const data = new FormData(form);
+  const params = new URLSearchParams();
+  params.append('entry.512961606', data.get('nome') || '');
+  params.append('entry.1735089704', data.get('email') || '');
+  params.append('entry.1584064640', data.get('telefone') || '');
+  params.append('entry.1929600278', data.get('area') || '');
+  params.append('entry.1015008506', data.get('cidade') || '');
+  fetch('https://docs.google.com/forms/d/e/1FAIpQLSfBaGZpzu6mn1PfyrhjCjeAET6mbxYCOxiQEQ_KIGCRLhfzzQ/formResponse', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString()
+  })
     .then(() => {
       document.getElementById('form-success').classList.add('active');
       form.reset();
     })
     .catch((err) => {
-      console.error('EmailJS error', err);
+      console.error('Google Forms submit error', err);
       alert('Não foi possível enviar agora. Tente de novo em instantes ou fale pelo WhatsApp.');
     })
     .finally(() => {
